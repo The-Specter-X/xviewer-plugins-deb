@@ -1,0 +1,12 @@
+*.buildinfo
+*.changes
+*.deb
+*.dsc
+*.tar.*
+.pc/
+build/
+obj-*/
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/xviewer-plugins/
