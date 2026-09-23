@@ -1,0 +1,75 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: xviewer-plugins
+Upstream-Contact: Linux Mint <root@linuxmint.com>
+Source: https://github.com/linuxmint/xviewer-plugins
+Files-Excluded: debian
+Comment: The upstream debian directory contains Linux Mint packaging and is
+ excluded from the Debian orig tarball to keep the packaging histories apart.
+
+Files: *
+Copyright: 2005-2016 GNOME and Eye of GNOME plugin contributors
+           2016-2026 Linux Mint and Xviewer contributors
+License: GPL-2+
+
+Files: plugins/exif-display/xviewer-exif-display-plugin*.c
+       plugins/exif-display/xviewer-exif-display-plugin*.h
+       plugins/send-by-mail/xviewer-send-by-mail-plugin.c
+       plugins/send-by-mail/xviewer-send-by-mail-plugin.h
+Copyright: 2009-2011 Free Software Foundation, Inc.
+License: GPL-2+
+
+Files: plugins/export-to-folder/export-to-folder.py
+       plugins/export-to-folder/export-to-folder.plugin.desktop.in
+Copyright: 2012 Jendrik Seipp
+License: GPL-2+
+
+Files: plugins/slideshowshuffle/slideshowshuffle.py
+       plugins/slideshowshuffle/slideshowshuffle.plugin.desktop.in
+Copyright: 2008 Johannes Marbach
+License: GPL-2+
+
+Files: plugins/pythonconsole/*.py
+Copyright: 1998 James Henstridge
+           2005 Adam Hooper
+           2005 Raphaël Slinckx
+           2006 Steve Frécinaux
+           2007 Diego Escalante Urrelo
+           2008 B. Clausius
+License: GPL-2+
+
+Files: plugins/*/*.metainfo.xml.in
+Copyright: 2014 Igor Gnatenko
+License: CC0-1.0
+Comment: The metadata declares CC0-1.0 for its own contents and GPL-2.0+
+ for the plugin program.
+
+Files: po/*
+Copyright: 2007-2013 Free Software Foundation, Inc.
+           2007-2026 GNOME, Linux Mint, and Xviewer translation contributors
+License: GPL-2+
+
+Files: debian/*
+       README.md
+Copyright: 2026 James Arden <theoverseer@tuta.com>
+License: GPL-2+
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the full text of the GNU General Public License
+ version 2 is in /usr/share/common-licenses/GPL-2.
+
+License: CC0-1.0
+ To the extent possible under law, the copyright holder has waived all
+ copyright and related or neighboring rights to this work. The work is
+ provided without warranty of any kind.
+ .
+ On Debian systems, the full text is in /usr/share/common-licenses/CC0-1.0.
