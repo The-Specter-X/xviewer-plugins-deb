@@ -2,9 +2,6 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: xviewer-plugins
 Upstream-Contact: Linux Mint <root@linuxmint.com>
 Source: https://github.com/linuxmint/xviewer-plugins
-Files-Excluded: debian
-Comment: The upstream debian directory contains Linux Mint packaging and is
- excluded from the Debian orig tarball to keep the packaging histories apart.
 
 Files: *
 Copyright: 2005-2016 GNOME and Eye of GNOME plugin contributors
@@ -49,7 +46,6 @@ Copyright: 2007-2013 Free Software Foundation, Inc.
 License: GPL-2+
 
 Files: debian/*
-       README.md
 Copyright: 2026 James Arden <theoverseer@tuta.com>
 License: GPL-2+
 

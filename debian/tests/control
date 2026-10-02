@@ -1,0 +1,3 @@
+Tests: plugins
+Depends: xviewer-plugins, python3-gi, dpkg-dev, xvfb, xauth
+Restrictions: allow-stderr

@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+multiarch=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
+export GI_TYPELIB_PATH="/usr/lib/$multiarch/xviewer/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
+export LD_LIBRARY_PATH="/usr/lib/$multiarch/xviewer${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+xvfb-run -a python3 - <<'PY'
+import sys
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Peas', '1.0')
+gi.require_version('PeasGtk', '1.0')
+gi.require_version('Xviewer', '3.0')
+from gi.repository import Gtk, Peas, PeasGtk, Xviewer
+
+Gtk.init([])
+engine = Peas.Engine.get_default()
+engine.enable_loader('python3')
+engine.add_search_path('/usr/lib/xviewer/plugins', '/usr/share/xviewer/plugins')
+names = ['exif-display', 'export-to-folder', 'map', 'pythonconsole', 'send-by-mail', 'slideshowshuffle']
+for name in names:
+    info = engine.get_plugin_info(name)
+    assert info is not None, f'missing plugin: {name}'
+    assert engine.load_plugin(info), f'cannot load plugin: {name}'
+
+sys.path.insert(0, '/usr/lib/xviewer/plugins')
+from pythonconsole.console import PythonConsole
+namespace = {}
+console = PythonConsole(namespace)
+console.eval('answer = 6 * 7')
+assert namespace['answer'] == 42
+console.destroy()
+for name in reversed(names):
+    assert engine.unload_plugin(engine.get_plugin_info(name))
+PY

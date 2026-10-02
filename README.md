@@ -1,52 +1,46 @@
-# Debian packaging for Xviewer plugins
+# Xviewer-plugins packaging for Debian
 
-This repository contains the Debian packaging for the Linux Mint
-[Xviewer plugins](https://github.com/linuxmint/xviewer-plugins), using the
-upstream **3.4.4** release. The source tarball is fetched from the upstream
-release tag; upstream code is not copied into this packaging repository.
+This repository contains Debian packaging for [Linux Mint's xviewer-plugins](https://github.com/linuxmint/xviewer-plugins), targeting upstream tag **3.4.4** and source version **3.4.4-1**. The inspected tag points to commit `34a81b1c3de5b819994fbb8814ee8b162dc64d58`. Upstream code is downloaded separately.
 
-The package builds one binary package, `xviewer-plugins`. It installs the six
-plugins built by upstream: Exif Display, Export to Folder, Map, Python Console,
-Send by Mail, and Slideshow Shuffle. Upstream has disabled Postr because the
-external `postr` program is no longer in Debian.
+The source builds `xviewer-plugins`, containing Exif Display, Export to Folder, Map, Python Console, Send by Mail, and Slideshow Shuffle. Postr remains disabled upstream. Debhelper generates debug symbol packages automatically.
 
-## Build on Debian
+## Build and check
 
-Build and install [xviewer](https://github.com/The-Specter-X/xviewer-deb)
-first, including its `xviewer-dev` and `gir1.2-xviewer-3.0` packages. They
-are not yet available from the official Debian archive. On the minimal build
-VM, install the three matching locally built `.deb` files with `apt install`
-so dependencies are resolved, then run:
+Use a minimal Debian unstable build VM and a separate Debian Cinnamon desktop VM for interactive tests. Install `build-essential`, `devscripts`, `dpkg-dev`, `lintian`, `sbuild`, and `autopkgtest` on the build VM. Configure an unstable sbuild/schroot testbed before using the isolated commands below.
+
+Build Xviewer first from [xviewer-deb](https://github.com/The-Specter-X/xviewer-deb). Install its three matching local packages (`xviewer`, `xviewer-dev`, and `gir1.2-xviewer-3.0`) with APT on the build VM. They are not yet in the official Debian archive.
+
+From this packaging checkout:
 
 ```sh
-git clone https://github.com/The-Specter-X/xviewer-plugins-deb.git
-cd xviewer-plugins-deb
-sudo apt install devscripts debhelper dh-python meson ninja-build
 uscan --download-current-version --destdir ..
-sudo apt-get build-dep .
-dpkg-buildpackage -us -uc -b
+mkdir ../xviewer-plugins-3.4.4
+tar -xf ../xviewer-plugins_3.4.4.orig.tar.gz -C ../xviewer-plugins-3.4.4 --strip-components=1
+# Replace the extracted Linux Mint packaging completely.
+rm -rf ../xviewer-plugins-3.4.4/debian
+cp -a debian ../xviewer-plugins-3.4.4/
+cd ../xviewer-plugins-3.4.4
+sudo apt build-dep .
+dpkg-buildpackage -us -uc
+lintian -i -I --pedantic ../xviewer-plugins_3.4.4-1_*.changes
+sbuild -d unstable ../xviewer-plugins_3.4.4-1.dsc
+autopkgtest ../xviewer-plugins_3.4.4-1_amd64.changes -- schroot unstable-amd64-sbuild
 ```
 
-`uscan` downloads and repacks the upstream release as
-`../xviewer-plugins_3.4.4+ds.orig.tar.xz`. Alternatively, `gbp import-orig
---uscan` can import the upstream tarball into the Git branches defined in
-`debian/gbp.conf`. The `-b` build creates a local binary package for testing;
-use a full signed source build for a Debian upload.
+The `mkdir` deliberately fails if the build tree already exists; start with a fresh tree for each source preparation. Replace `amd64` and the testbed name with your configured architecture and schroot.
 
-Install the resulting `../xviewer-plugins_*.deb` on the separate Cinnamon VM
-that has matching Xviewer packages. In Xviewer, open **Edit → Preferences →
-Plugins** and check that the six plugins appear and can be enabled.
+Use the original upstream archive, without a `+ds` repack just to remove `debian/`. Source format `3.0 (quilt)` replaces that directory when extracting the Debian source package. This packaging-only repository does not assume imported upstream or pristine-tar branches. `debian/watch` discovers numbered upstream tags; inspect and update the changelog before packaging a newer release.
 
-## Debian status
+The installed-package test loads all six plugins through libpeas and executes code in the Python Console. Also enable and exercise each plugin in Xviewer on the desktop VM.
 
-The existing WNPP request is [#830625](https://bugs.debian.org/830625). Its
-current title is an RFP. Before a prospective Debian upload, the maintainer
-can retitle and claim that existing report as an ITP, rather than opening a
-second WNPP report.
+Install the resulting runtime packages with APT on the separate Cinnamon VM. Test opening, saving where applicable, help, printing, thumbnails and plugins, including Wayland and X11 sessions where available. Automated smoke checks do not cover all interactive behavior.
 
-`debian/salsa-ci.yml` uses the standard Salsa CI recipe. On Salsa, set the
-project's CI configuration file path to `debian/salsa-ci.yml` after pushing
-the repository. CI build dependencies cannot resolve `xviewer-dev` from the
-official Debian archive until Xviewer has been uploaded there, or the pipeline
-is configured to consume matching Xviewer packages from a trusted package
-repository.
+## Salsa and submission
+
+The intended Salsa project is `https://salsa.debian.org/Overseer/xviewer-plugins`. Push the packaging history there and set the CI configuration path to `debian/salsa-ci.yml` under **Settings → CI/CD → General pipelines**. The standard Salsa recipe is retained.
+
+The existing WNPP request is [#830625](https://bugs.debian.org/830625). Claim it as an ITP before requesting sponsorship.
+
+Keep the changelog `UNRELEASED` during preparation. After clean Debian unstable builds, installed-package tests, desktop checks and copyright review pass, finalize it for `unstable`, build and sign a source upload on the machine holding your signing key, and upload it to mentors.debian.net for sponsor review. GitHub commits and Salsa CI do not upload to Debian. Do not commit binaries; any test binary release should include the matching source, `.changes`, `.buildinfo` and checksums.
+
+An isolated build or Salsa pipeline also needs the matching Xviewer build dependencies from a trusted local package repository until Xviewer enters Debian. Installing them on the host alone does not make them available inside a clean testbed.
